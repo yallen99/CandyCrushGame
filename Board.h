@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+
 using namespace std;
 
 #define EASY_BOARD 5
@@ -11,6 +12,22 @@ using namespace std;
 #define HARD_BOARD 9
 
 #define MIN_MATCH 3
+
+enum class EDirection: uint8_t
+{
+    UP,
+    DOWN,
+    LEFT,
+    RIGHT
+};
+
+static map<EDirection, string> directionStrings =
+{
+    {EDirection::UP, "UP"},
+    {EDirection::DOWN, "DOWN"},
+    {EDirection::LEFT, "LEFT"},
+    {EDirection::RIGHT, "RIGHT"},
+};
 
 enum class ECandyType: uint8_t
 {
@@ -36,7 +53,11 @@ class Slot
 public:
    
     const ECandyType& getCandy() const { return candy; }
-    void setCandy(const ECandyType& newType) { candy = newType; }
+    void setCandy(const ECandyType& newType)
+    {
+        candy = newType;
+        setVisualOutput(candyTypeLiterals[newType]);
+    }
 
     const int getIndex() const { return index; }
     void setIndex(const int newIndex) { index = newIndex; }
@@ -83,19 +104,24 @@ public:
     const vector<Slot*>& getSlots() const { return slots; }
     bool CheckForMatch(const vector<Slot*>& inSlots, const string& marker);
     void DrawFullBoard();
-
+    void HighlightCell(int coordinates);
+    void HighlightDirection(const EDirection& direction);
+    
 private:
     uint8_t rowSize = 0;
     vector<Slot*> slots;
+    int currentlySelectedCell = -1;
+
+    void SwapCellData();
     void GenerateBoardSlots(unsigned boardSize);
     
     void FillMatchedSlots(const vector<unsigned>& matchedIndexes);
-
     static Slot* GenerateRandomCandy(Slot& currentCandy);
     static void DrawBoardCorner();
     static void DrawIndex(const unsigned i);
     static void DrawCandy(const Slot& slotToDraw);
 };
+
 
 
 

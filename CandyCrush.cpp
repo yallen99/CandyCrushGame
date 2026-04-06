@@ -14,7 +14,6 @@ namespace GameCommands
         START,
         END,
         RESTART,
-        SHUFFLE
     };
 
     static map<EInfoBlock, string> extendedInfo =
@@ -23,7 +22,6 @@ namespace GameCommands
         {EInfoBlock::START, "Type \"start\" to start the game"},
         {EInfoBlock::END, "Type \"end\" to end the game"},
         {EInfoBlock::RESTART, "Type \"restart\" to end the game"},
-        {EInfoBlock::SHUFFLE, "Type \"shuffle\" to shuffle the current board"},
     };
 
     static map<EInfoBlock, string> commands =
@@ -32,7 +30,6 @@ namespace GameCommands
         {EInfoBlock::START, "start"},
         {EInfoBlock::END, "end"},
         {EInfoBlock::RESTART, "restart"},
-        {EInfoBlock::SHUFFLE, "shuffle"},
     };
 
     static void PrintHelpBlock()
@@ -65,6 +62,8 @@ void CheckMatch(Board& board)
     cout << endl;
     cout << " ************ Your turn! ************ " << endl;
     cout << endl;
+    cout << " -_-_-_- input row - column -_-_-_- " << endl;
+    cout << endl;
 }
 
 int main()
@@ -72,8 +71,10 @@ int main()
     cout << "Type \"help\" to see the list of available commands." << endl;
     cout << "Type \"start\" to Start!" << endl;
     string input;
+    unique_ptr<Board> board = nullptr;
     do
     {
+        int boardSize = HARD_BOARD;
         cin >> input;
         if (input == commands[EInfoBlock::HELP])
         {
@@ -81,8 +82,31 @@ int main()
         }
         if (input == commands[EInfoBlock::START])
         {
-            unique_ptr<Board> newBoard = make_unique<Board>(HARD_BOARD);
-            CheckMatch(*newBoard);
+            board = make_unique<Board>(boardSize);
+            CheckMatch(*board);
+        }
+        if (input > "0" && input.length() == 2)
+        {
+            const int cellCoords = stoi(input);
+            cout << endl;
+            board->HighlightCell(cellCoords);
+        }
+        // Direction checks
+        if (input == directionStrings[EDirection::UP])
+        {
+            board->HighlightDirection(EDirection::UP);
+        }
+        if (input == directionStrings[EDirection::DOWN])
+        {
+            board->HighlightDirection(EDirection::DOWN);
+        }
+        if (input == directionStrings[EDirection::LEFT])
+        {
+            board->HighlightDirection(EDirection::LEFT);
+        }
+        if (input == directionStrings[EDirection::RIGHT])
+        {
+            board->HighlightDirection(EDirection::RIGHT);
         }
         if (input == commands[EInfoBlock::END])
         {

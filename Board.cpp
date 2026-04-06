@@ -152,6 +152,64 @@ void Board::GenerateBoardSlots(unsigned boardSize)
     }
 }
 
+void Board::HighlightCell(int coordinates)
+{
+    currentlySelectedCell = coordinates;
+    cout << endl;
+    cout << " -_-_-_- input direction (UP, DOWN, LEFT, RIGHT) -_-_-_- " << endl;
+    cout << endl;
+    /*
+    const int row = (cellCoord / 10) - 1;
+    const int column = (cellCoord % 10) - 1;
+    slots[rowSize * row + column]->setVisualOutput("\033[1;37mo\033[1;37m");
+    DrawFullBoard();*/
+}
+
+void Board::HighlightDirection(const EDirection& direction)
+{
+    if (currentlySelectedCell < 0)
+    {
+        return;
+    }
+    int prevRow = (currentlySelectedCell / 10) - 1;
+    int prevColumn = (currentlySelectedCell % 10) - 1;
+    int row = prevRow;
+    int column = prevColumn;
+    switch (direction)
+    {
+        case EDirection::UP:
+            row -= 1;
+            break;
+        case EDirection::DOWN:
+            row += 1;
+            break;
+        case EDirection::LEFT:
+            column -= 1;
+            break;
+        case EDirection::RIGHT:
+            column += 1;
+            break;
+    }
+    if (column < 0 || row < 0 || column >= rowSize || row >= rowSize)
+    {
+        cout << "Invalid direction!" << endl;
+        return;
+    }
+
+    // do the swap
+    Slot& firstSlot = *slots[rowSize * prevRow + prevColumn];
+    Slot& secondSlot = *slots[rowSize * row + column];
+    const ECandyType firstType = slots[rowSize * prevRow + prevColumn]->getCandy();
+    const ECandyType secondType = slots[rowSize * row + column]->getCandy();
+
+    firstSlot.setCandy(secondType);
+    secondSlot.setCandy(firstType);
+
+    DrawFullBoard();
+
+    currentlySelectedCell = -1;
+}
+
 void Board::DrawBoardCorner()
 {
     cout << "   ";
