@@ -48,6 +48,17 @@ namespace GameCommands
 }
 
 using namespace GameCommands;
+
+void CheckMatch(Board& board)
+{
+    cout << endl;
+    cout << " -_-_-_- CHECKING MATCH -_-_-_- " << endl;
+    cout << endl;
+
+    board.CheckForMatch(board.getSlots(), "x");
+    board.DrawFullBoard();
+}
+
 int main()
 {
     cout << "Type \"help\" to see the list of available commands." << endl;
@@ -55,6 +66,8 @@ int main()
     string input;
     do
     {
+        unique_ptr<Board> newBoard = make_unique<Board>(MEDIUM_BOARD);
+        CheckMatch(*newBoard);
         cin >> input;
         if (input == commands[EInfoBlock::HELP])
         {
@@ -62,7 +75,8 @@ int main()
         }
         if (input == commands[EInfoBlock::START])
         {
-            Board newBoard(EASY_BOARD);
+            unique_ptr<Board> newBoard = make_unique<Board>(MEDIUM_BOARD);
+            CheckMatch(*newBoard);
         }
         if (input == commands[EInfoBlock::END])
         {
