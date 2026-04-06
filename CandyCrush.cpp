@@ -66,7 +66,7 @@ int main()
     string input;
     do
     {
-        unique_ptr<Board> newBoard = make_unique<Board>(MEDIUM_BOARD);
+        unique_ptr<Board> newBoard = make_unique<Board>(HARD_BOARD);
         CheckMatch(*newBoard);
         cin >> input;
         if (input == commands[EInfoBlock::HELP])
@@ -75,7 +75,7 @@ int main()
         }
         if (input == commands[EInfoBlock::START])
         {
-            unique_ptr<Board> newBoard = make_unique<Board>(MEDIUM_BOARD);
+            unique_ptr<Board> newBoard = make_unique<Board>(HARD_BOARD);
             CheckMatch(*newBoard);
         }
         if (input == commands[EInfoBlock::END])

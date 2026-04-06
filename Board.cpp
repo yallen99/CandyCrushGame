@@ -4,7 +4,7 @@
 
 void Board::CheckForMatch(const vector<Slot*>& inSlots, const string& marker)
 {
-    unsigned matchCount = 1;
+    unsigned horMatchCount = 1;
     vector<unsigned> matchIndexes;
     matchIndexes.reserve(pow(rowSize, 2));
 
@@ -14,28 +14,28 @@ void Board::CheckForMatch(const vector<Slot*>& inSlots, const string& marker)
         if (inSlots[i]->getCandy() == inSlots[i - 1]->getCandy()
             && i % rowSize != 0)
         {
-            if (i == inSlots.size() - 1 && matchCount < MIN_MATCH - 1)
+            if (i == inSlots.size() - 1 && horMatchCount < MIN_MATCH - 1)
             {
                 continue;
             }
-            matchCount++;
+            horMatchCount++;
             matchIndexes.push_back(i - 1);
         }
         else
         {
-            if (matchCount >= MIN_MATCH)
+            if (horMatchCount >= MIN_MATCH)
             {
                 matchIndexes.push_back(i - 1);
-                matchCount = 1;
+                horMatchCount = 1;
             }
             else
             {
-                if (matchCount > 1)
+                if (horMatchCount > 1)
                 {
-                    while (matchCount > 1)
+                    while (horMatchCount > 1)
                     {
                         matchIndexes.pop_back();
-                        matchCount--;
+                        horMatchCount--;
                     }
                 }
             }
@@ -43,23 +43,16 @@ void Board::CheckForMatch(const vector<Slot*>& inSlots, const string& marker)
         /// If we reached the end of a row, reset the counter
         if (i % rowSize == 0)
         {
-            matchCount = 1;
+            horMatchCount = 1;
         }
     }
-   
-    for (unsigned matchIndex : matchIndexes)
-    {
-        slots[matchIndex]->setVisualOutput("\033[1;37m" + marker + "\033[1;37m");
-    }
 
-    ///////////////////////////////////////////////////////////////
-    unsigned vertMatchCount = 1;
-    vector<unsigned> vertMatchIndexes;
-    vertMatchIndexes.reserve(inSlots.size());
- 
     /// vertical check
+    unsigned vertMatchCount = 1;
     for (unsigned j = 0, i = rowSize + j; i < inSlots.size(); i += rowSize)
     {
+        // currLastRowIndex = given the current column, the index of i on the last row (ex: 42 to 48 for a 7x7 board)
+        unsigned currLastRowIndex = static_cast<unsigned>(pow(rowSize, 2) - (rowSize - j));
         if (j >= rowSize)
         {
             break;
@@ -67,16 +60,16 @@ void Board::CheckForMatch(const vector<Slot*>& inSlots, const string& marker)
         if (inSlots[i]->getCandy() == inSlots[i - rowSize]->getCandy())
         {
             vertMatchCount++;
-            vertMatchIndexes.emplace_back(i - rowSize);
-            if (i == static_cast<unsigned>(pow(rowSize, 2) - (rowSize - j)) && vertMatchCount >= MIN_MATCH)
+            matchIndexes.emplace_back(i - rowSize);
+            if (i == currLastRowIndex && vertMatchCount >= MIN_MATCH)
             {
-                vertMatchIndexes.emplace_back(i);
+                matchIndexes.emplace_back(i);
             }
-            else if (i == static_cast<unsigned>(pow(rowSize, 2) - (rowSize - j)) && vertMatchCount < MIN_MATCH)
+            else if (i == currLastRowIndex && vertMatchCount < MIN_MATCH)
             {
                 while (vertMatchCount > 1)
                 {
-                    vertMatchIndexes.pop_back();
+                    matchIndexes.pop_back();
                     vertMatchCount--;
                 }
             }
@@ -85,7 +78,7 @@ void Board::CheckForMatch(const vector<Slot*>& inSlots, const string& marker)
         {
             if (vertMatchCount >= MIN_MATCH)
             {
-                vertMatchIndexes.emplace_back(i - rowSize);
+                matchIndexes.emplace_back(i - rowSize);
                 vertMatchCount = 1;
             }
             else
@@ -94,13 +87,13 @@ void Board::CheckForMatch(const vector<Slot*>& inSlots, const string& marker)
                 {
                     while (vertMatchCount > 1)
                     {
-                        vertMatchIndexes.pop_back();
+                        matchIndexes.pop_back();
                         vertMatchCount--;
                     }
                 }
             }
         }
-        if (i % static_cast<int>(pow(rowSize, 2) - (rowSize - j)) == 0)
+        if (i % currLastRowIndex == 0)
         {
             vertMatchCount = 1;
             j++;
@@ -108,7 +101,7 @@ void Board::CheckForMatch(const vector<Slot*>& inSlots, const string& marker)
         }
     }
    
-    for (unsigned matchIndex : vertMatchIndexes)
+    for (unsigned matchIndex : matchIndexes)
     {
         slots[matchIndex]->setVisualOutput("\033[1;37m" + marker + "\033[1;37m");
     }
@@ -160,7 +153,6 @@ void Board::DrawFullBoard()
 
 void Board::DrawIndex(const unsigned i)
 {
-    /// draw the indexes in white
     cout << " " << "\033[1;37m"<< i <<"\033[1;37m" << " ";
 }
 void Board::DrawCandy(const Slot& slotToDraw)
