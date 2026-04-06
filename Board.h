@@ -81,17 +81,21 @@ public:
 
     const uint8_t getSize() const { return rowSize; }
     const vector<Slot*>& getSlots() const { return slots; }
-    void CheckForMatch(const vector<Slot*>& inSlots, const string& marker);
+    bool CheckForMatch(const vector<Slot*>& inSlots, const string& marker);
     void DrawFullBoard();
 
 private:
     uint8_t rowSize = 0;
     vector<Slot*> slots;
     void GenerateBoardSlots(unsigned boardSize);
+    
+    void FillMatchedSlots(const vector<unsigned>& matchedIndexes);
 
     static void DrawBoardCorner();
     static void DrawIndex(const unsigned i);
     static void DrawCandy(const Slot& slotToDraw);
 };
+
+
 
 

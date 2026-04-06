@@ -54,9 +54,17 @@ void CheckMatch(Board& board)
     cout << endl;
     cout << " -_-_-_- CHECKING MATCH -_-_-_- " << endl;
     cout << endl;
-
-    board.CheckForMatch(board.getSlots(), "x");
-    board.DrawFullBoard();
+    
+    while (board.CheckForMatch(board.getSlots(), "x"))
+    {
+        cout << endl;
+        cout << " -_-_-_- NEW BOARD -_-_-_- " << endl;
+        cout << endl;
+    }
+    
+    cout << endl;
+    cout << " ************ Your turn! ************ " << endl;
+    cout << endl;
 }
 
 int main()
@@ -66,8 +74,6 @@ int main()
     string input;
     do
     {
-        unique_ptr<Board> newBoard = make_unique<Board>(HARD_BOARD);
-        CheckMatch(*newBoard);
         cin >> input;
         if (input == commands[EInfoBlock::HELP])
         {
