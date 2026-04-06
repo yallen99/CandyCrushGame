@@ -94,6 +94,10 @@ void GameManager::ProcessPlayerDirectionChoice(const string& input)
 bool GameManager::ProcessEndGame(const string& input)
 {
     const string& sanitizedInput = GetSanitisedInput(input);
-    return sanitizedInput == commands[EInfoBlock::end];
-    currentState = EGameState::game_end;
+    if (sanitizedInput == commands[EInfoBlock::end])
+    {
+        currentState = EGameState::game_end;
+        return true;
+    }
+    return false;
 }
