@@ -28,7 +28,6 @@ bool Board::CheckForMatch(const vector<Slot*>& inSlots, const string& marker)
             {
                 matchIndexes.push_back(i - 1);
                 horMatchCount = 1;
-                foundMatch = true;
             }
             else
             {
@@ -82,7 +81,6 @@ bool Board::CheckForMatch(const vector<Slot*>& inSlots, const string& marker)
             {
                 matchIndexes.emplace_back(i - rowSize);
                 vertMatchCount = 1;
-                foundMatch = true;
             }
             else
             {
@@ -106,18 +104,28 @@ bool Board::CheckForMatch(const vector<Slot*>& inSlots, const string& marker)
    
     for (unsigned matchIndex : matchIndexes)
     {
+        foundMatch = true;
         slots[matchIndex]->setVisualOutput("\033[1;37m" + marker + "\033[1;37m");
     }
     
     DrawFullBoard();
     if (foundMatch)
     {
-        
         FillMatchedSlots(matchIndexes);
         DrawFullBoard();
     }
 
     return foundMatch;
+}
+Slot* Board::GenerateRandomCandy(Slot& currentCandy)
+{
+    random_device rd; // obtain a random number from hardware
+    mt19937 gen(rd()); // seed the generator
+    uniform_int_distribution<> randomCandyType(1, static_cast<int>(ECandyType::COUNT) - 1);
+    const ECandyType candyType = static_cast<ECandyType>(randomCandyType(gen));
+    currentCandy.setCandy(candyType);
+    currentCandy.setVisualOutput(candyTypeLiterals[candyType]);
+    return &currentCandy;
 }
 
 void Board::FillMatchedSlots(const vector<unsigned>& matchedIndexes)
@@ -128,25 +136,16 @@ void Board::FillMatchedSlots(const vector<unsigned>& matchedIndexes)
     // Replace matched indexes with a new random candy (for now, no gravity @todo)
     for (unsigned matchIndex : matchedIndexes)
     {
-        random_device rd; // obtain a random number from hardware
-        mt19937 gen(rd()); // seed the generator
-        uniform_int_distribution<> randomCandyType(1, static_cast<int>(ECandyType::COUNT) - 1);
-        const ECandyType candyType = static_cast<ECandyType>(randomCandyType(gen));
-        slots[matchIndex]->setCandy(candyType);
-        slots[matchIndex]->setVisualOutput(candyTypeLiterals[candyType]);
+        GenerateRandomCandy(*slots[matchIndex]);
     }
 }
 
 void Board::GenerateBoardSlots(unsigned boardSize)
 {
-    random_device rd; // obtain a random number from hardware
-    mt19937 gen(rd()); // seed the generator
-    uniform_int_distribution<> randomCandyType(1, static_cast<int>(ECandyType::COUNT) - 1);
-
     for (unsigned i = 0; i < pow(boardSize, 2); i++)
     {
         Slot* slot = new Slot();
-        slot->setCandy(static_cast<ECandyType>(randomCandyType(gen)));
+        GenerateRandomCandy(*slot);
         slot->setIndex(static_cast<int>(i));
         slot->setVisualOutput(candyTypeLiterals[slot->getCandy()]);
         slots.push_back(slot);

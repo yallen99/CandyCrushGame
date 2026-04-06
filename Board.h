@@ -91,10 +91,12 @@ private:
     
     void FillMatchedSlots(const vector<unsigned>& matchedIndexes);
 
+    static Slot* GenerateRandomCandy(Slot& currentCandy);
     static void DrawBoardCorner();
     static void DrawIndex(const unsigned i);
     static void DrawCandy(const Slot& slotToDraw);
 };
+
 
 
 
