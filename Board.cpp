@@ -152,14 +152,11 @@ void Board::GenerateBoardSlots(unsigned boardSize)
     }
 }
 
-void Board::HighlightCell(int coordinates)
+void Board::PickCell(const int coordinates)
 {
     currentlySelectedCell = coordinates;
-    cout << endl;
-    cout << " -_-_-_- input direction (UP, DOWN, LEFT, RIGHT) -_-_-_- " << endl;
-    cout << endl;
-    /*
-    const int row = (cellCoord / 10) - 1;
+    
+    /* const int row = (cellCoord / 10) - 1;
     const int column = (cellCoord % 10) - 1;
     slots[rowSize * row + column]->setVisualOutput("\033[1;37mo\033[1;37m");
     DrawFullBoard();*/

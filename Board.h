@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 
-
 using namespace std;
 
 #define EASY_BOARD 5
@@ -23,10 +22,10 @@ enum class EDirection: uint8_t
 
 static map<EDirection, string> directionStrings =
 {
-    {EDirection::UP, "UP"},
-    {EDirection::DOWN, "DOWN"},
-    {EDirection::LEFT, "LEFT"},
-    {EDirection::RIGHT, "RIGHT"},
+    {EDirection::UP, "up"},
+    {EDirection::DOWN, "down"},
+    {EDirection::LEFT, "left"},
+    {EDirection::RIGHT, "right"},
 };
 
 enum class ECandyType: uint8_t
@@ -100,11 +99,12 @@ public:
         }
     }
 
-    const uint8_t getSize() const { return rowSize; }
-    const vector<Slot*>& getSlots() const { return slots; }
+    uint8_t GetSize() const { return rowSize; }
+    const vector<Slot*>& GetSlots() const { return slots; }
+    
     bool CheckForMatch(const vector<Slot*>& inSlots, const string& marker);
     void DrawFullBoard();
-    void HighlightCell(int coordinates);
+    void PickCell(int coordinates);
     void HighlightDirection(const EDirection& direction);
     
 private:
@@ -112,7 +112,6 @@ private:
     vector<Slot*> slots;
     int currentlySelectedCell = -1;
 
-    void SwapCellData();
     void GenerateBoardSlots(unsigned boardSize);
     
     void FillMatchedSlots(const vector<unsigned>& matchedIndexes);
