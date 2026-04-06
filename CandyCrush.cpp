@@ -33,6 +33,7 @@ int main()
             case EGameState::awaiting_input_direction:
                 gameManager->ProcessPlayerDirectionChoice(input);
             break;
+            default: break;
         }
     } while (gameManager->GetGameState() != EGameState::game_end);
     return 0;
