@@ -39,3 +39,7 @@ int main()
     } while (gameManager->GetGameState() != EGameState::game_end);
     return 0;
 }
+/// TODO
+/// gravityyyyyyyyy
+/// score system - give each candy a score value and x by how many candies matched
+/// Figure out the colors for power shell

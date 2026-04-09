@@ -102,7 +102,7 @@ public:
     uint8_t GetSize() const { return rowSize; }
     const vector<Slot*>& GetSlots() const { return slots; }
     
-    bool CheckForMatch(const vector<Slot*>& inSlots, const string& marker);
+    bool CheckForMatch(const string& marker);
     void DrawFullBoard();
     void PickCell(int coordinates);
     void HighlightDirection(const EDirection& direction);

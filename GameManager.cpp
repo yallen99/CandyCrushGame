@@ -25,7 +25,7 @@ void GameManager::ProcessMatchCheck()
     {
         PrintGameEvent("CHECKING MATCH");
 
-        while (board->CheckForMatch(board->GetSlots(), "x"))
+        while (board->CheckForMatch( "x"))
         {
             PrintGameEvent("NEW BOARD");
         }

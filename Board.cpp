@@ -2,7 +2,9 @@
 #include <iostream>
 #include <random>
 
-bool Board::CheckForMatch(const vector<Slot*>& inSlots, const string& marker)
+#include "GameManager.h"
+
+bool Board::CheckForMatch(const string& marker)
 {
     bool foundMatch = false;
     unsigned horMatchCount = 1;
@@ -10,12 +12,12 @@ bool Board::CheckForMatch(const vector<Slot*>& inSlots, const string& marker)
     matchIndexes.reserve(pow(rowSize, 2));
 
     /// horizontal check
-    for (unsigned i = 1; i < inSlots.size(); i++)
+    for (unsigned i = 1; i < slots.size(); i++)
     {
-        if (inSlots[i]->getCandy() == inSlots[i - 1]->getCandy()
+        if (slots[i]->getCandy() == slots[i - 1]->getCandy()
             && i % rowSize != 0)
         {
-            if (i == inSlots.size() - 1 && horMatchCount < MIN_MATCH - 1)
+            if (i == slots.size() - 1 && horMatchCount < MIN_MATCH - 1)
             {
                 continue;
             }
@@ -50,7 +52,7 @@ bool Board::CheckForMatch(const vector<Slot*>& inSlots, const string& marker)
 
     /// vertical check
     unsigned vertMatchCount = 1;
-    for (unsigned j = 0, i = rowSize + j; i < inSlots.size(); i += rowSize)
+    for (unsigned j = 0, i = rowSize + j; i < slots.size(); i += rowSize)
     {
         // currLastRowIndex = given the current column, the index of i on the last row (ex: 42 to 48 for a 7x7 board)
         unsigned currLastRowIndex = static_cast<unsigned>(pow(rowSize, 2) - (rowSize - j));
@@ -58,7 +60,7 @@ bool Board::CheckForMatch(const vector<Slot*>& inSlots, const string& marker)
         {
             break;
         }
-        if (inSlots[i]->getCandy() == inSlots[i - rowSize]->getCandy())
+        if (slots[i]->getCandy() == slots[i - rowSize]->getCandy())
         {
             vertMatchCount++;
             matchIndexes.emplace_back(i - rowSize);
@@ -107,6 +109,7 @@ bool Board::CheckForMatch(const vector<Slot*>& inSlots, const string& marker)
         foundMatch = true;
         slots[matchIndex]->setVisualOutput("\033[1;37m" + marker + "\033[1;37m");
     }
+
     
     DrawFullBoard();
     if (foundMatch)
@@ -117,6 +120,7 @@ bool Board::CheckForMatch(const vector<Slot*>& inSlots, const string& marker)
 
     return foundMatch;
 }
+
 Slot* Board::GenerateRandomCandy(Slot& currentCandy)
 {
     random_device rd; // obtain a random number from hardware
@@ -202,7 +206,13 @@ void Board::HighlightDirection(const EDirection& direction)
     firstSlot.setCandy(secondType);
     secondSlot.setCandy(firstType);
 
-    DrawFullBoard();
+    // check if the swap was a successful match
+    if (!CheckForMatch("x"))
+    {
+        firstSlot.setCandy(firstType);
+        secondSlot.setCandy(secondType);
+        CandyCrushStrings::PrintGameEvent("NO MATCH FOR SELECTION!");
+    }
 
     currentlySelectedCell = -1;
 }
