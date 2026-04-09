@@ -40,7 +40,7 @@ enum class ECandyType: uint8_t
 
 static map<ECandyType, string> candyTypeLiterals =
 {
-    {ECandyType::NONE, ""},
+    {ECandyType::NONE, "\033[1;37mE\033[1;37m"},
     {ECandyType::A, "\033[32mo\033[0m"},
     {ECandyType::B, "\x1B[31mo\x1B[31m"},
     {ECandyType::C, "\x1B[36mo\x1B[36m"},
@@ -50,7 +50,9 @@ static map<ECandyType, string> candyTypeLiterals =
 class Slot
 {
 public:
-   
+    Slot() {}
+    Slot(const ECandyType candyType) : candy(candyType) {}
+    
     const ECandyType& getCandy() const { return candy; }
     void setCandy(const ECandyType& newType)
     {
@@ -64,6 +66,12 @@ public:
     const string& getVisualOutput() const { return visualOutput; }
     void setVisualOutput(const string& newVisualOutput) { visualOutput = newVisualOutput; }
 
+    bool IsEqual(const Slot& other) const
+    {
+        return candy == other.candy
+        && other.getCandy() != ECandyType::NONE
+        && other.getCandy() != ECandyType::COUNT;
+    }
 private:
     ECandyType candy = ECandyType::NONE;
     string visualOutput = candyTypeLiterals[candy];
@@ -114,7 +122,7 @@ private:
 
     void GenerateBoardSlots(unsigned boardSize);
     
-    void FillMatchedSlots(const vector<unsigned>& matchedIndexes);
+    void FillMatchedSlots(vector<unsigned> matchedIndexes);
     static Slot* GenerateRandomCandy(Slot& currentCandy);
     static void DrawBoardCorner();
     static void DrawIndex(const unsigned i);

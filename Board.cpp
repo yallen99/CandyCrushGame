@@ -14,7 +14,7 @@ bool Board::CheckForMatch(const string& marker)
     /// horizontal check
     for (unsigned i = 1; i < slots.size(); i++)
     {
-        if (slots[i]->getCandy() == slots[i - 1]->getCandy()
+        if (slots[i]->IsEqual(*slots[i - 1])
             && i % rowSize != 0)
         {
             if (i == slots.size() - 1 && horMatchCount < MIN_MATCH - 1)
@@ -60,7 +60,7 @@ bool Board::CheckForMatch(const string& marker)
         {
             break;
         }
-        if (slots[i]->getCandy() == slots[i - rowSize]->getCandy())
+        if (slots[i]->IsEqual(*slots[i - rowSize]))
         {
             vertMatchCount++;
             matchIndexes.emplace_back(i - rowSize);
@@ -107,6 +107,7 @@ bool Board::CheckForMatch(const string& marker)
     for (unsigned matchIndex : matchIndexes)
     {
         foundMatch = true;
+        slots[matchIndex]->setCandy(ECandyType::NONE);
         slots[matchIndex]->setVisualOutput("\033[1;37m" + marker + "\033[1;37m");
     }
 
@@ -132,15 +133,43 @@ Slot* Board::GenerateRandomCandy(Slot& currentCandy)
     return &currentCandy;
 }
 
-void Board::FillMatchedSlots(const vector<unsigned>& matchedIndexes)
+void Board::FillMatchedSlots(vector<unsigned> matchedIndexes)
 {
     cout << endl;
     cout << " -_-_-_- FILLING MATCHES -_-_-_- " << endl;
     cout << endl;
-    // Replace matched indexes with a new random candy (for now, no gravity @todo)
+    sort(matchedIndexes.begin(), matchedIndexes.end(),
+        [] (const unsigned& a, const unsigned& b)
+        {
+            return a > b;
+        });
+
+    // temp
+    for (auto matchedIndex : matchedIndexes)
+    {
+        cout << matchedIndex << " ";
+    }
+    cout << endl;
+    // end temp
+
     for (unsigned matchIndex : matchedIndexes)
     {
-        GenerateRandomCandy(*slots[matchIndex]);
+        int currentRowItr = 1;
+        if (matchIndex < rowSize)
+        {
+            continue;
+        }
+        while (static_cast<int>(matchIndex - (rowSize * currentRowItr)) > 0)
+        {
+            Slot& nextAbove = *slots[matchIndex - (rowSize * currentRowItr)];
+            if (nextAbove.getCandy() != ECandyType::NONE)
+            {
+                slots[matchIndex]->setCandy(nextAbove.getCandy());
+                nextAbove.setCandy(ECandyType::NONE);
+                break;
+            }
+            currentRowItr++;
+        }
     }
 }
 

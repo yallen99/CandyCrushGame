@@ -1,5 +1,4 @@
 #include <iostream>
-#include <map>
 #include <string>
 
 #include "Board.h"
@@ -13,7 +12,6 @@ int main()
     PrintGameStart();
     
     string input;
-    unique_ptr<Board> board = nullptr;
     const unique_ptr<GameManager> gameManager = make_unique<GameManager>();
     do
     {
