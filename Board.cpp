@@ -144,21 +144,16 @@ void Board::FillMatchedSlots(vector<unsigned> matchedIndexes)
             return a > b;
         });
 
-    // temp
-    for (auto matchedIndex : matchedIndexes)
+    // Cut paste from above functionality
+    /*for (unsigned matchIndex : matchedIndexes)
     {
-        cout << matchedIndex << " ";
-    }
-    cout << endl;
-    // end temp
-
-    for (unsigned matchIndex : matchedIndexes)
-    {
-        int currentRowItr = 1;
         if (matchIndex < rowSize)
         {
+            // we are on the first row already, we need to generate new candies
             continue;
         }
+        
+        int currentRowItr = 1;
         while (static_cast<int>(matchIndex - (rowSize * currentRowItr)) > 0)
         {
             Slot& nextAbove = *slots[matchIndex - (rowSize * currentRowItr)];
@@ -170,7 +165,80 @@ void Board::FillMatchedSlots(vector<unsigned> matchedIndexes)
             }
             currentRowItr++;
         }
+    }*/
+
+    // cycle column by column, bottom to top (42 - 35 - 28 - 21 - 14 - 7 etc.)
+    for (int column = 0, i = static_cast<int>(pow(rowSize, 2) - (rowSize - column)); i >= 0; i -= rowSize)
+    {
+        if (column > rowSize - 1 || i >= static_cast<int>(pow(rowSize, 2)))
+        {
+            break;
+        }
+        if (slots[i]->getCandy() == ECandyType::NONE)
+        {
+            if (i < rowSize)
+            {
+                slots[i]->setCandy(ECandyType::NONE);
+                column++;
+                i = static_cast<int>(pow(rowSize, 2) + column);
+                continue;
+            }
+            int emptySlotsFound = 0;
+            emptySlotsFound++;
+            int anchorIndex = i;
+            // count how many empty slots upwards we have
+            while (anchorIndex > 0)
+            {
+                if (anchorIndex - rowSize < 0)
+                {
+                    break;
+                }
+                anchorIndex -= rowSize;
+                    
+                if (slots[anchorIndex]->getCandy() == ECandyType::NONE)
+                {
+                    emptySlotsFound++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            // move down the candies sequentially
+            int itr = 0;
+            //cout << "Found " << emptySlotsFound << " empty slots on column " << column << endl;
+            while (itr < emptySlotsFound)
+            {
+                int a = 0; // additional search index
+                int currEmptySlotIndex = i - (itr * rowSize);
+                int nextFullSlotIndex = i - rowSize * (emptySlotsFound + itr + a);
+                if (nextFullSlotIndex < 0)
+                {
+                    break;
+                }
+                if (slots[nextFullSlotIndex]->getCandy() == ECandyType::NONE)
+                {
+                    int itr2 = nextFullSlotIndex;
+                    while (slots[nextFullSlotIndex]->getCandy() == ECandyType::NONE && itr2 > 0)
+                    {
+                        a++;
+                        itr2--;
+                    }
+                }
+                slots[currEmptySlotIndex]->setCandy(slots[nextFullSlotIndex]->getCandy());
+                slots[nextFullSlotIndex]->setCandy(ECandyType::NONE);
+                //cout << "Moved down " << nextFullSlotIndex << " to " << currEmptySlotIndex << endl;
+                //cout << "Additional search index: " << a << endl;
+                itr++;
+            }
+        }
+        if (i - rowSize < 0)
+        {
+            column++;
+            i = static_cast<int>(pow(rowSize, 2) + column);
+        }
     }
+    cout << endl;
 }
 
 void Board::GenerateBoardSlots(unsigned boardSize)
