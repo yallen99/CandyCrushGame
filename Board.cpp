@@ -144,29 +144,6 @@ void Board::FillMatchedSlots(vector<unsigned> matchedIndexes)
             return a > b;
         });
 
-    // Cut paste from above functionality
-    /*for (unsigned matchIndex : matchedIndexes)
-    {
-        if (matchIndex < rowSize)
-        {
-            // we are on the first row already, we need to generate new candies
-            continue;
-        }
-        
-        int currentRowItr = 1;
-        while (static_cast<int>(matchIndex - (rowSize * currentRowItr)) > 0)
-        {
-            Slot& nextAbove = *slots[matchIndex - (rowSize * currentRowItr)];
-            if (nextAbove.getCandy() != ECandyType::NONE)
-            {
-                slots[matchIndex]->setCandy(nextAbove.getCandy());
-                nextAbove.setCandy(ECandyType::NONE);
-                break;
-            }
-            currentRowItr++;
-        }
-    }*/
-
     // cycle column by column, bottom to top (42 - 35 - 28 - 21 - 14 - 7 etc.)
     for (int column = 0, i = static_cast<int>(pow(rowSize, 2) - (rowSize - column)); i >= 0; i -= rowSize)
     {
@@ -239,6 +216,15 @@ void Board::FillMatchedSlots(vector<unsigned> matchedIndexes)
         }
     }
     cout << endl;
+
+    // Fill the empty slots with random new candies
+    for (int i = 0; i < static_cast<int>(pow(rowSize, 2)) - 1; i++)
+    {
+        if (slots[i]->getCandy() == ECandyType::NONE)
+        {
+            GenerateRandomCandy(*slots[i]);
+        }
+    }
 }
 
 void Board::GenerateBoardSlots(unsigned boardSize)
